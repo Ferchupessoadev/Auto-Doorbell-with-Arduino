@@ -11,6 +11,38 @@
 ThreeWire myWire(4,5,2); // IO, SCLK, CE
 RtcDS1302<ThreeWire> Rtc(myWire);
 
+const int timbres[100][100] = {
+   // mañana.
+// hora, minutos
+   {7, 10},
+   {7, 15},
+   {8, 0}, 
+   {8, 40},
+   {8, 50},
+   {9, 30},
+   {10, 10},
+   {10, 20},
+   {11, 0},
+   {11, 40},
+   {11, 45},
+   {12, 25},
+   {13, 5},
+   // tarde.
+   {13, 25},
+   {13, 30},
+   {14, 10},
+   {14, 50},
+   {15, 0},
+   {15, 40},
+   {16, 20},
+   {16, 30},
+   {17, 10},
+   {17, 50},
+   {17, 55},
+   {18, 35},
+   {19, 12},
+}
+
 const int feriadosArg[11][2] = {
   { 1, 1 },           // Año Nuevo
   { 24, 3 },          // Día Nacional de la Memoria por la Verdad y la Justicia
@@ -26,13 +58,15 @@ const int feriadosArg[11][2] = {
 
 int cantidadDeFeriadosArg = 10;
 
+int pinBuzzer = 8;
 
 void setup () 
 {
     Serial.begin(57600);
-		// iniciamos el reloj.
-		Rtc.Begin();
-
+    // iniciamos el reloj.
+    Rtc.Begin();
+    // buzzer pin
+    pinMode(pinBuzzer, OUTPUT);
 //  Obtener la fecha y hora actual del sistema
 //  const char compileDate[] = __DATE__;
 //  const char compileTime[] = __TIME__;
@@ -63,7 +97,7 @@ bool esFeriado(int dia, int mes) {
       return true;  
     }
   }
-	return false;
+  return false;
 }
 
 char* printDateTime(RtcDateTime now) {
@@ -85,7 +119,7 @@ char* printDateTime(RtcDateTime now) {
     Serial.print(":");
     Serial.print(now.Second());
     Serial.println();
-		return dayOfWeek;
+    return dayOfWeek;
 };
 
 void loop ()
@@ -94,6 +128,9 @@ void loop ()
      const char* dayOfWeek = printDateTime(now);
      if (strcmp(dayOfWeek, "Sabado") != 0 and strcmp(dayOfWeek, "Domingo") != 0) {
         const bool hoyEsFeriado = esFeriado(now.Day(), now.Month());
+        if(now.Hour() == 16 and now.Minute() == 42) {
+          digitalWrite(pinBuzzer, HIGH);
+        };
      };
      delay(1000); // one second
 }
