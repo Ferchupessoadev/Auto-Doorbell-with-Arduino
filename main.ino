@@ -97,11 +97,9 @@ void loop ()
         if(es_recreo_o_cambio_de_hora(now.Hour(), now.Minute(), now.Second())) {
             digitalWrite(pinBuzzer, HIGH);
             timbre_sonando = true;
-        } else {
-            if (timbre_sonando == true) {
+        } else if (timbre_sonando == true) {
                 digitalWrite(pinBuzzer, LOW);  
                 timbre_sonando = false;
-            }
         }
     // };
      delay(1000);
