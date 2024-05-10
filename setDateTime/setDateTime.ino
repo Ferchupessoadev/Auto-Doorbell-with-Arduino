@@ -35,7 +35,7 @@ void setup ()
           break;
       }
     }
-  
+    compileSecond += 9;
     // Configurar la fecha y hora en momento de compilación.
     RtcDateTime manualDateTime(compileYear, compileMonth, compileDay, compileHour, compileMinute, compileSecond);
     Rtc.SetDateTime(manualDateTime);
