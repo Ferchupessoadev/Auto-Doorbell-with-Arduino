@@ -3,7 +3,7 @@
 #include <IRremote.h>
 #include <LiquidCrystal_I2C.h>
 
-// config of lcd.
+// Config of lcd.
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 // config of Rtc module ds1302
@@ -17,7 +17,8 @@ RtcDS1302<ThreeWire> Rtc(myWire);
 // DS1302 GND --> GND
 
 // pines
-const int pinBuzzer = 8;
+const int pinRele = 8;
+const int pinInfrarrojo = 9;
 // variables
 int timbre_sonando = false;
 // botonos del control del kit de arduino.
@@ -79,9 +80,9 @@ void setup ()
     lcd.print("hello world");
     
     // buzzer pin
-    pinMode(pinBuzzer, OUTPUT);
+    pinMode(pinRele, OUTPUT);
     
-    IrReceiver.begin(9, DISABLE_LED_FEEDBACK);
+    IrReceiver.begin(pinInfrarrojo DISABLE_LED_FEEDBACK);
 }
 
 bool es_recreo_o_cambio_de_hora(int hora, int minuto, int segundo) {
@@ -149,7 +150,7 @@ void loop ()
             } else if(es_recreo_o_cambio_de_hora(now.Hour(), now.Minute(), now.Second())) {
                 digitalWrite(pinBuzzer, HIGH);
                 timbre_sonando = true;
-            } else if (timbre_sonando == true) {
+            } else if (timbre_sonando) {
                 digitalWrite(pinBuzzer, LOW);  
                 timbre_sonando = false;
                 lcd.clear();  
