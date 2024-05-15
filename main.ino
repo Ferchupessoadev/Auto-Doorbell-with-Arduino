@@ -38,33 +38,33 @@ int timbre_sonando = false;
 const int timbres[26][2] = {
    // mañana.
 // hora, minutos
-   {7, 10},
-   {7, 15},
-   {8, 0}, 
-   {8, 40},
-   {8, 50},
-   {9, 30},
-   {10, 10},
-   {10, 20},
-   {11, 0},
-   {11, 40},
-   {11, 45},
-   {12, 25},
-   {13, 5},
-   // tarde.
-   {13, 25},
-   {13, 30},
-   {14, 10},
-   {14, 50},
-   {15, 0},
-   {15, 40},
-   {16, 20},
-   {16, 30},
-   {17, 10},
-   {17, 50},
-   {17, 55},
-   {18, 35},
-   {19, 25},
+	{7, 10},
+	{7, 15},
+	{8, 0}, 
+	{8, 40},
+	{8, 50},
+	{9, 30},
+	{10, 10},
+	{10, 20},
+	{11, 0},
+	{11, 40},
+	{11, 45},
+	{12, 25},
+	{13, 5},
+	// tarde.
+	{13, 25},
+	{13, 30},
+	{14, 10},
+	{14, 50},
+	{15, 0},
+	{15, 40},
+	{16, 20},
+	{16, 30},
+	{17, 10},
+	{17, 50},
+	{17, 55},
+	{18, 35},
+	{19, 25},
 };
 
 void setup () 
@@ -86,8 +86,8 @@ void setup ()
 }
 
 bool es_recreo_o_cambio_de_hora(int hora, int minuto, int segundo) {
-    for(long i = 0; i < 26; i++) {
-        if(timbres[i][0] == hora and timbres[i][1] == minuto and segundo > 0 and segundo <= 10) {
+    for (short short i = 0; i < 26; i++) {
+        if (timbres[i][0] == hora and timbres[i][1] == minuto and segundo > 0 and segundo <= 10) {
             return true;
         }
     }
@@ -97,6 +97,7 @@ bool es_recreo_o_cambio_de_hora(int hora, int minuto, int segundo) {
 
 int secondActual = 0;
 int newSecond = secondActual;
+
 char* printDateTime(RtcDateTime now) {
     Serial.print("Date: ");
     const char* dayOfWeekStr[] = {"Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"};
@@ -117,37 +118,39 @@ char* printDateTime(RtcDateTime now) {
     Serial.print(now.Second());
     Serial.println();
     secondActual = now.Second();
-    if(newSecond != secondActual and !timbre_sonando) {
-       lcd.clear();  
+    if (newSecond != secondActual and !timbre_sonando) {
+    	lcd.clear();  
     };
     newSecond = secondActual;
     lcd.setCursor(0,0);
-    if(!timbre_sonando) {
-      lcd.print(now.Hour());
-      lcd.print(":");
-      lcd.print(now.Minute());
-      lcd.print(":");
-      lcd.print(now.Second());  
+    if (!timbre_sonando) {
+		lcd.print(now.Hour());
+		lcd.print(":");
+		lcd.print(now.Minute());
+		lcd.print(":");
+		lcd.print(now.Second());  
     } else {
-      lcd.print("Timbre sonando");
+      	lcd.print("Timbre sonando");
     }
 
     return dayOfWeek;
 };
-char opcion;
+
 void loop ()
 {
-     while(IrReceiver.decode() == 0) {
-         RtcDateTime now = Rtc.GetDateTime();
-         const char* dayOfWeek = printDateTime(now);
-         if (strcmp(dayOfWeek, "Sabado") != 0 and strcmp(dayOfWeek, "Domingo") != 0) {
-            if(Serial.available()) {
-              opcion = Serial.read();
+	char opcion;
+    while (IrReceiver.decode() == 0) {
+		RtcDateTime now = Rtc.GetDateTime();
+		const char* dayOfWeek = printDateTime(now);
+		if (strcmp(dayOfWeek, "Sabado") != 0 and strcmp(dayOfWeek, "Domingo") != 0) {
+            if (Serial.available()) {
+            	opcion = Serial.read();
             }
+
             if (opcion == 'p') {
                 digitalWrite(pinBuzzer, HIGH);  
                 timbre_sonando = true;
-            } else if(es_recreo_o_cambio_de_hora(now.Hour(), now.Minute(), now.Second())) {
+            } else if (es_recreo_o_cambio_de_hora(now.Hour(), now.Minute(), now.Second())) {
                 digitalWrite(pinBuzzer, HIGH);
                 timbre_sonando = true;
             } else if (timbre_sonando) {
@@ -156,10 +159,15 @@ void loop ()
                 lcd.clear();  
             }
         }; 
-     };
-     switch (IrReceiver.decodedIRData.decodedRawData) {
-        case boton_0:opcion = 'p'; break;
-        case boton_1: opcion = 'n';break;
+    };
+
+    switch (IrReceiver.decodedIRData.decodedRawData) {
+        case boton_0: 
+        	opcion = 'p'; 
+        	break;
+        case boton_1: 
+        	opcion = 'n'; 
+        	break;
      };
     IrReceiver.resume();
     delay(10);
