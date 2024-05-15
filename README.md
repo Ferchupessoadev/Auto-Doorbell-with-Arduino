@@ -15,3 +15,7 @@
 - I2C Module for the screen lcd
 - Relay Module of 1 channel 5v 10a Arduino Avr
 - RTC Ds1302 Module 
+
+## Circuit
+
+Todo
