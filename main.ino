@@ -17,8 +17,8 @@ RtcDS1302<ThreeWire> Rtc(myWire);
 // DS1302 GND --> GND
 
 // pines
-const int pinRele = 8;
-const int pinInfrarrojo = 9;
+#define pinRele = 8;
+#define pinInfrarrojo = 9;
 // variables
 int timbre_sonando = false;
 // botonos del control del kit de arduino.
@@ -35,38 +35,6 @@ int timbre_sonando = false;
 #define boton_more 0xEA15FF00
 #define boton_less 0xF807FF00
 
-const int timbres[26][2] = {
-   // mañana.
-// hora, minutos
-	{7, 10},
-	{7, 15},
-	{8, 0}, 
-	{8, 40},
-	{8, 50},
-	{9, 30},
-	{10, 10},
-	{10, 20},
-	{11, 0},
-	{11, 40},
-	{11, 45},
-	{12, 25},
-	{13, 5},
-	// tarde.
-	{13, 25},
-	{13, 30},
-	{14, 10},
-	{14, 50},
-	{15, 0},
-	{15, 40},
-	{16, 20},
-	{16, 30},
-	{17, 10},
-	{17, 50},
-	{17, 55},
-	{18, 35},
-	{19, 25},
-};
-
 void setup () 
 {
     Serial.begin(57600);
@@ -76,8 +44,6 @@ void setup ()
     // iniciamos el lcd
     lcd.init();
     lcd.backlight();
-    lcd.setCursor(0, 0);
-    lcd.print("hello world");
     
     // buzzer pin
     pinMode(pinRele, OUTPUT);
@@ -86,6 +52,37 @@ void setup ()
 }
 
 bool es_recreo_o_cambio_de_hora(int hora, int minuto, int segundo) {
+		static const int timbres[26][2] = {
+		  // mañana.
+			// hora, minutos
+			{7, 10},
+			{7, 15},
+			{8, 0}, 
+			{8, 40},
+			{8, 50},
+			{9, 30},
+			{10, 10},
+			{10, 20},
+			{11, 0},
+			{11, 40},
+			{11, 45},
+			{12, 25},
+			{13, 5},
+			// tarde.
+			{13, 25},
+			{13, 30},
+			{14, 10},
+			{14, 50},
+			{15, 0},
+			{15, 40},
+			{16, 20},
+			{16, 30},
+			{17, 10},
+			{17, 50},
+			{17, 55},
+			{18, 35},
+			{19, 25},
+		};
     for (short short i = 0; i < 26; i++) {
         if (timbres[i][0] == hora and timbres[i][1] == minuto and segundo > 0 and segundo <= 10) {
             return true;
@@ -93,7 +90,6 @@ bool es_recreo_o_cambio_de_hora(int hora, int minuto, int segundo) {
     }
     return false;
 };
-
 
 int secondActual = 0;
 int newSecond = secondActual;
@@ -138,7 +134,7 @@ char* printDateTime(RtcDateTime now) {
 
 void loop ()
 {
-	char opcion;
+		char opcion;
     while (IrReceiver.decode() == 0) {
 		RtcDateTime now = Rtc.GetDateTime();
 		const char* dayOfWeek = printDateTime(now);
