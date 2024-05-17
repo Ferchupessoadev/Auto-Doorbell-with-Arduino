@@ -1,6 +1,5 @@
 #include <RtcDS1302.h>
 #include <Wire.h>
-#include <IRremote.h>
 #include <LiquidCrystal_I2C.h>
 
 // Config of lcd.
@@ -19,21 +18,8 @@ RtcDS1302<ThreeWire> Rtc(myWire);
 // pines
 #define pinRele 8
 #define pinInfrarrojo 9
-// variables
+
 int timbre_sonando = false;
-// botonos del control del kit de arduino.
-#define boton_0 0xE916FF00
-#define boton_1 0xF30CFF00
-#define boton_2 0xE718FF00
-#define boton_3 0xA15EFF00
-#define boton_4 0xF708FF00
-#define boton_5 0xE31CFF00
-#define boton_6 0xA55AFF00
-#define boton_7 0xBD42FF00
-#define boton_8 0xAD52FF00
-#define boton_9 0xB54AFF00
-#define boton_more 0xEA15FF00
-#define boton_less 0xF807FF00
 
 void setup()
 {
@@ -47,8 +33,6 @@ void setup()
 
     // buzzer pin
     pinMode(pinRele, OUTPUT);
-
-    IrReceiver.begin(pinInfrarrojo, DISABLE_LED_FEEDBACK);
 }
 
 bool es_recreo_o_cambio_de_hora(int hora, int minuto, int segundo)
@@ -142,24 +126,13 @@ String printDateTime(RtcDateTime now)
 
 void loop()
 {
-    char opcion;
     while (IrReceiver.decode() == 0)
     {
         RtcDateTime now = Rtc.GetDateTime();
         const String dayOfWeek = printDateTime(now);
         if (dayOfWeek.equals("Sabado") and dayOfWeek.equals("Domingo"))
         {
-            if (Serial.available())
-            {
-                opcion = Serial.read();
-            }
-
-            if (opcion == 'p')
-            {
-                digitalWrite(pinRele, HIGH);
-                timbre_sonando = true;
-            }
-            else if (es_recreo_o_cambio_de_hora(now.Hour(), now.Minute(), now.Second()))
+            if (es_recreo_o_cambio_de_hora(now.Hour(), now.Minute(), now.Second()))
             {
                 digitalWrite(pinRele, HIGH);
                 timbre_sonando = true;
