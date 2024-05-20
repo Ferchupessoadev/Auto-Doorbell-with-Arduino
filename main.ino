@@ -1,29 +1,48 @@
 #include <RtcDS1302.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
+#include <Keypad.h>
+
+// pines
+#define pinRele 13
 
 // Config of lcd.
-LiquidCrystal_I2C lcd(0x27, 16, 2);
+LiquidCrystal_I2C lcd(0x20, 16, 2);
 
 // config of Rtc module ds1302
-ThreeWire myWire(4, 5, 2); // IO, SCLK, CE
+ThreeWire myWire(11, 10, 12); // IO, SCLK, CE
 RtcDS1302<ThreeWire> Rtc(myWire);
 // CONEXIONES DS1302:
-// DS1302 CLK/SCLK --> 5
-// DS1302 DAT/IO --> 4
-// DS1302 RST/CE --> 2
+// DS1302 CLK/SCLK --> 10
+// DS1302 DAT/IO --> 11
+// DS1302 RST/CE --> 12
 // DS1302 VCC --> 3.3v - 5v
 // DS1302 GND --> GND
 
-// pines
-#define pinRele 8
-#define pinInfrarrojo 9
+bool timbre_sonando = false;
+// CONFIG KEYPAD
+const byte ROWS = 4;// Filas
+const byte COLS = 4;//Columnas
 
-int timbre_sonando = false;
+// var config __DATE__ and __TIME__
+int compileYear, compileMonth, compileDay, compileHour, compileMinute, compileSecond;
+
+char keys[ROWS][COLS] = {
+  {'1','2','3','A'},
+  {'4','5','6','B'},
+  {'7','8','9','C'},
+  {'*','0','#','D'}
+};
+
+byte rowPins[ROWS] = {9, 8, 7, 6}; 
+byte colPins[COLS] = {5, 4, 3, 2}; 
+
+//SE CREA Y CONFIGURA EL OBJETO KEYPAD 
+Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
+
 
 void setup()
 {
-    Serial.begin(57600);
     // iniciamos el reloj.
     Rtc.Begin();
 
@@ -66,7 +85,7 @@ bool es_recreo_o_cambio_de_hora(int hora, int minuto, int segundo)
         {17, 50},
         {17, 55},
         {18, 35},
-        {19, 25},
+        {19, 15},
     };
     for (short i = 0; i < 26; i++)
     {
@@ -81,26 +100,8 @@ bool es_recreo_o_cambio_de_hora(int hora, int minuto, int segundo)
 int secondActual = 0;
 int newSecond = secondActual;
 
-String printDateTime(RtcDateTime now)
+void printDateTime(RtcDateTime now)
 {
-    Serial.print("Date: ");
-    const char *dayOfWeekStr[] = {"Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"};
-    const char *dayOfWeek = dayOfWeekStr[now.DayOfWeek()];
-    Serial.print(dayOfWeek);
-    Serial.print(" ");
-    Serial.print(now.Day());
-    Serial.print("/");
-    Serial.print(now.Month());
-    Serial.print("/");
-    Serial.print(now.Year());
-    Serial.println();
-    Serial.print("Time: ");
-    Serial.print(now.Hour());
-    Serial.print(":");
-    Serial.print(now.Minute());
-    Serial.print(":");
-    Serial.print(now.Second());
-    Serial.println();
     secondActual = now.Second();
     if (newSecond != secondActual and !timbre_sonando)
     {
@@ -120,41 +121,58 @@ String printDateTime(RtcDateTime now)
     {
         lcd.print("Timbre sonando");
     }
-
-    return dayOfWeek;
 };
 
 void loop()
 {
-    while (IrReceiver.decode() == 0)
-    {
-        RtcDateTime now = Rtc.GetDateTime();
-        const String dayOfWeek = printDateTime(now);
-        if (dayOfWeek.equals("Sabado") and dayOfWeek.equals("Domingo"))
-        {
-            if (es_recreo_o_cambio_de_hora(now.Hour(), now.Minute(), now.Second()))
-            {
-                digitalWrite(pinRele, HIGH);
-                timbre_sonando = true;
-            }
-            else if (timbre_sonando)
-            {
-                digitalWrite(pinRele, LOW);
-                timbre_sonando = false;
-                lcd.clear();
-            }
-        };
-    };
+        static bool config_mode = false;
+        char key = keypad.getKey();
+        if (key != NO_KEY || config_mode) {
+          if(key == '#') {
+            int compileYear, compileMonth, compileDay, compileHour, compileMinute, compileSecond
+            lcd.setCursor(0,0);
+            if (!config_mode) {
+              config_mode = true;
+              lcd.clear();
+              lcd.print("Configuracion de la fecha y hora.");
+              delay(1000);
+            };
+          } 
+          else (config_mode) {
+            switch(currentStep) {
+              case 0:
+                
+                break;
+              case 1:
 
-    switch (IrReceiver.decodedIRData.decodedRawData)
-    {
-    case boton_0:
-        opcion = 'p';
-        break;
-    case boton_1:
-        opcion = 'n';
-        break;
-    };
-    IrReceiver.resume();
-    delay(10);
+                break:
+              case 2:
+
+                break;
+
+              case 3:
+                break;
+            }
+          }
+          
+        } else {
+          RtcDateTime now = Rtc.GetDateTime();
+          printDateTime(now);
+          const char *dayOfWeekStr[] = {"Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"};
+          const char *dayOfWeek = dayOfWeekStr[now.DayOfWeek()];
+          if (dayOfWeek.equals("Sabado") and dayOfWeek.equals("Domingo"))
+          {
+              if (es_recreo_o_cambio_de_hora(now.Hour(), now.Minute(), now.Second()))
+              {
+                  digitalWrite(pinRele, HIGH);
+                  timbre_sonando = true;
+              }
+              else if (timbre_sonando)
+              {
+                  digitalWrite(pinRele, LOW);
+                  timbre_sonando = false;
+                  lcd.clear();
+              }
+          };
+        }
 }
