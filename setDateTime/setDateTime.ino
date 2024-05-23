@@ -1,19 +1,18 @@
 // CONEXIONES DS1302:
-// DS1302 CLK/SCLK --> 5
-// DS1302 DAT/IO --> 4
-// DS1302 RST/CE --> 2
+// DS1302 CLK/SCLK --> 10
+// DS1302 DAT/IO --> 11
+// DS1302 RST/CE --> 12
 // DS1302 VCC --> 3.3v - 5v
 // DS1302 GND --> GND
 
 #include <RtcDS1302.h>
 #include <Wire.h>
 
-ThreeWire myWire(4, 5, 2); // IO, SCLK, CE
+ThreeWire myWire(11, 10, 12); // IO, SCLK, CE
 RtcDS1302<ThreeWire> Rtc(myWire);
 
 void setup()
 {
-  Serial.begin(57600);
   // iniciamos el reloj.
   Rtc.Begin();
 
@@ -37,7 +36,7 @@ void setup()
       break;
     }
   }
-  compileSecond += 9;
+  compileSecond += 5;
   // Configurar la fecha y hora en momento de compilación.
   RtcDateTime manualDateTime(compileYear, compileMonth, compileDay, compileHour, compileMinute, compileSecond);
   Rtc.SetDateTime(manualDateTime);

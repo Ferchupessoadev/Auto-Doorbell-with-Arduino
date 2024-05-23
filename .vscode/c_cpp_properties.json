@@ -20,8 +20,8 @@
                 "/home/ferchodev/.arduino15/packages/arduino/hardware/avr/1.8.6/variants/standard",
                 "/home/ferchodev/Arduino/libraries/Rtc_by_Makuna/src",
                 "/home/ferchodev/.arduino15/packages/arduino/hardware/avr/1.8.6/libraries/Wire/src",
-                "/home/ferchodev/Arduino/libraries/IRremote/src",
                 "/home/ferchodev/Arduino/libraries/LiquidCrystal_I2C",
+                "/home/ferchodev/Arduino/libraries/Keypad/src",
                 "/home/ferchodev/.arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/lib/gcc/avr/7.3.0/include",
                 "/home/ferchodev/.arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/lib/gcc/avr/7.3.0/include-fixed",
                 "/home/ferchodev/.arduino15/packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/avr/include"
