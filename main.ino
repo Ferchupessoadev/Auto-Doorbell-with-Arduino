@@ -7,14 +7,8 @@
 LiquidCrystal_I2C lcd(0x20, 16, 2);
 
 // Rtc module ds1302
-ThreeWire myWire(11, 10, 12); // IO, SCLK, CE
+ThreeWire myWire(11, 10, 12); // DAT, CLK, RST
 RtcDS1302<ThreeWire> Rtc(myWire);
-// CONEXIONES DS1302:
-// DS1302 CLK/SCLK --> 10
-// DS1302 DAT/IO --> 11
-// DS1302 RST/CE --> 12
-// DS1302 VCC --> 3.3v - 5v
-// DS1302 GND --> GND
 
 // KEYPAD
 const byte ROWS = 4;
@@ -33,14 +27,11 @@ Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
 void setup()
 {
-  // iniciamos el reloj.
   Rtc.Begin();
 
-  // iniciamos el lcd
   lcd.init();
   lcd.backlight();
 
-  // Rele pin
   pinMode(A3, OUTPUT);
 }
 
@@ -73,7 +64,7 @@ bool es_recreo_o_cambio_de_hora(int hora, int minuto, int segundo, bool *timbre_
       {17, 50},
       {17, 55},
       {18, 35},
-      {21, 59},
+      {19, 15},
   };
   for (short i = 0; i < 26; i++)
   {
@@ -100,6 +91,15 @@ void printDateTime(RtcDateTime now, bool *timbre_sonando)
   lcd.setCursor(0, 0);
   if (!(*timbre_sonando))
   {
+    lcd.setCursor(0, 0);
+    lcd.print("DATE: ");
+    lcd.print(now.Year());
+    lcd.print(":");
+    lcd.print(now.Month());
+    lcd.print(":");
+    lcd.print(now.Day());
+    lcd.setCursor(0, 1);
+    lcd.print("TIME: ");
     lcd.print(now.Hour());
     lcd.print(":");
     lcd.print(now.Minute());
@@ -108,18 +108,31 @@ void printDateTime(RtcDateTime now, bool *timbre_sonando)
   }
   else
   {
+    if (now.Second() == 1)
+      lcd.clear();
     lcd.print("Timbre sonando");
   }
 };
 
+void add_key(String *input, char *key, char *msj)
+{
+  if ((*key) >= '0' && (*key) <= '9')
+  {
+    *input += (*key);
+    lcd.clear();
+    lcd.print(msj);
+    lcd.print((*input));
+  }
+}
+
 void loop()
 {
-  static int currentStep = 0; // 0 -> inputYear, inputMonth, inputDay , etc.
+  static int currentStep = 0; // 0 -> inputYear, 1 -> inputMonth, 2 -> inputDay , etc.
   static bool config_mode = false;
   static bool timbre_sonando = false;
   static bool *timbre_sonando_ptr = &timbre_sonando;
   static int compileYear, compileMonth, compileDay, compileHour, compileMinute, compileSecond;
-
+  static String inputYear, inputMonth, inputDay, inputHour, inputMinute, inputSecond;
   char key = keypad.getKey();
   if (key != NO_KEY || config_mode)
   {
@@ -130,41 +143,96 @@ void loop()
       lcd.clear();
       lcd.print("Configuracion de");
       lcd.setCursor(0, 1);
-      lcd.print("la fecha y hora");
-      delay(2000);
+      lcd.print("fecha y hora");
     }
     else if (key == 'D')
     {
       config_mode = false;
       currentStep = 0;
-    }
-    else if (key == 'C')
-    {
-      // TODO: cargamos los datos en las variables enteras.
+      inputYear = inputMonth = inputDay = inputHour = inputMinute = inputSecond = "";
     }
     else if (config_mode)
     {
       switch (currentStep)
       {
-      case 0: // inputYear
-
+      case 0:
+        add_key(&inputYear, &key, "Year: ");
+        if (inputYear.length() >= 4)
+        {
+          currentStep++;
+          delay(500);
+          lcd.clear();
+          lcd.print("Month: ");
+        }
         break;
       case 1:
-
+        add_key(&inputMonth, &key, "Month: ");
+        if (inputMonth.length() >= 2)
+        {
+          currentStep++;
+          delay(500);
+          lcd.clear();
+          lcd.print("Day: ");
+        }
         break;
       case 2:
-
+        add_key(&inputDay, &key, "Day: ");
+        if (inputDay.length() >= 2)
+        {
+          currentStep++;
+          delay(500);
+          lcd.clear();
+          lcd.print("Hour: ");
+        }
         break;
-
       case 3:
+        add_key(&inputHour, &key, "Hour: ");
+        if (inputHour.length() >= 2)
+        {
+          currentStep++;
+          delay(500);
+          lcd.clear();
+          lcd.print("Minute: ");
+        }
+        break;
+      case 4:
+        add_key(&inputMinute, &key, "Minute: ");
+
+        if (inputMinute.length() >= 2)
+        {
+          currentStep++;
+          delay(500);
+          lcd.clear();
+          lcd.print("Second: ");
+        }
+        break;
+      case 5:
+
+        add_key(&inputSecond, &key, "Second: ");
+        if (inputSecond.length() >= 2)
+        {
+          int year = inputYear.toInt();
+          int month = inputMonth.toInt();
+          int day = inputDay.toInt();
+          int hour = inputHour.toInt();
+          int minute = inputMinute.toInt();
+          int second = inputSecond.toInt();
+
+          RtcDateTime compiled = RtcDateTime(year, month, day, hour, minute, second);
+          Rtc.SetDateTime(compiled);
+          config_mode = false;
+          currentStep = 0;
+          inputYear = inputMonth = inputDay = inputHour = inputMinute = inputSecond = "";
+        }
         break;
       }
     }
     return;
   }
+
   RtcDateTime now = Rtc.GetDateTime();
   printDateTime(now, timbre_sonando_ptr);
-  const char *dayOfWeekStr[] = {"Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"};
+  const char *dayOfWeekStr[] = {"Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sabado"};
   const char *dayOfWeek = dayOfWeekStr[now.DayOfWeek()];
   if (strcmp(dayOfWeek, "Sabado") != 0 && strcmp(dayOfWeek, "Domingo") != 0)
   {
