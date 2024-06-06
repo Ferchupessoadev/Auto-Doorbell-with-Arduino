@@ -17,6 +17,6 @@
 - RTC Ds1302 Module 
 - Keypad de membrana
 
-## Circuit
+## Circuito/Conexiones 
 
 Todo
