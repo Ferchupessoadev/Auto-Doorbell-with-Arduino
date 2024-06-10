@@ -19,6 +19,6 @@
 
 ## Circuito/Conexiones 
 
-![Conexiones Timbre Automático](timbre_automatico.png")
+![Conexiones Timbre Automático](./timbre_automatico.png")
 
  > Falta Modulo RTC
