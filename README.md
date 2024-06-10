@@ -21,4 +21,4 @@
 
 ![Conexiones Timbre Automático](./timbre_automatico.png)
 
- > Falta Modulo RTC
+ > Nota: Falta Modulo RTC
