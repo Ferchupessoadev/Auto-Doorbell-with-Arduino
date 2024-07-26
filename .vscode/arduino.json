@@ -1,6 +1,0 @@
-{
-    "board": "arduino:avr:uno",
-    "programmer": "avrisp",
-    "sketch": "Sensor_de_temp/Sensor_de_temp.ino",
-    "port": "/dev/ttyUSB0"
-}
