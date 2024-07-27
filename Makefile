@@ -13,4 +13,4 @@ upload: compile
 	arduino-cli upload -p $(PORT) --fqbn $(FQBN) $(TARGET).ino
 
 clean:
-	rm -rf *.hex
+	rm -rf ./main/*.hex && rm -rf ./main/*.elf
