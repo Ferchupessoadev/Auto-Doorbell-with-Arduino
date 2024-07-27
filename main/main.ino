@@ -14,6 +14,11 @@ RtcDS1302<ThreeWire> Rtc(myWire);
 const byte ROWS = 4;
 const byte COLS = 4;
 
+// declaration of functions
+bool es_recreo_o_cambio_de_hora(int hora, int minuto, int segundo, bool *timbre_sonando);
+void printDateTime(RtcDateTime now, bool *timbre_sonando);
+void add_key(String *input, char *key, char *msj);
+
 char keys[ROWS][COLS] = {
     {'1', '2', '3', 'A'},
     {'4', '5', '6', 'B'},
