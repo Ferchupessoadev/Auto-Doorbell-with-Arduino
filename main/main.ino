@@ -5,6 +5,7 @@
 
 // LCD.
 LiquidCrystal_I2C lcd(0x20, 16, 2);
+static bool lcd_state = true;
 
 // Rtc module ds1302
 ThreeWire myWire(11, 10, 12); // DAT, CLK, RST
@@ -155,7 +156,15 @@ void loop()
       config_mode = false;
       currentStep = 0;
       inputYear = inputMonth = inputDay = inputHour = inputMinute = inputSecond = "";
-    }
+    } else if (key == 'A') {
+			if (lcd_state) {
+				lcd.noBacklight();
+				lcd_state = false;
+			} else {
+				lcd.backlight();
+				lcd_state = true;
+			}
+		}
     else if (config_mode)
     {
       switch (currentStep)
