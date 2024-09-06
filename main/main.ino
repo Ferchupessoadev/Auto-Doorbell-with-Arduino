@@ -3,6 +3,8 @@
 #include <LiquidCrystal_I2C.h>
 #include <Keypad.h>
 
+#define TIMEOUT_SECOND 5
+
 // LCD.
 LiquidCrystal_I2C lcd(0x20, 16, 2);
 static bool lcd_state = true;
@@ -74,7 +76,7 @@ bool es_recreo_o_cambio_de_hora(int hora, int minuto, int segundo, bool *timbre_
   };
   for (short i = 0; i < 26; i++)
   {
-    if (timbres[i][0] == hora and timbres[i][1] == minuto and segundo > 0 and segundo <= 10)
+    if (timbres[i][0] == hora and timbres[i][1] == minuto and segundo > 0 and segundo <= TIMEOUT_SECOND)
     {
       *timbre_sonando = true;
       return true;
