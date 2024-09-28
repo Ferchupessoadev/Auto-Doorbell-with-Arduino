@@ -160,11 +160,11 @@ void loop()
       inputYear = inputMonth = inputDay = inputHour = inputMinute = inputSecond = "";
     } else if (key == 'A') {
       if (lcd_state) {
-	lcd.noBacklight();
-	lcd_state = false;
+				lcd.noBacklight();
+				lcd_state = false;
       } else {
-	lcd.backlight();
-	lcd_state = true;
+				lcd.backlight();
+				lcd_state = true;
       }
     }
     else if (config_mode)
