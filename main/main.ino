@@ -159,14 +159,14 @@ void loop()
       currentStep = 0;
       inputYear = inputMonth = inputDay = inputHour = inputMinute = inputSecond = "";
     } else if (key == 'A') {
-			if (lcd_state) {
-				lcd.noBacklight();
-				lcd_state = false;
-			} else {
-				lcd.backlight();
-				lcd_state = true;
-			}
-		}
+      if (lcd_state) {
+	lcd.noBacklight();
+	lcd_state = false;
+      } else {
+	lcd.backlight();
+	lcd_state = true;
+      }
+    }
     else if (config_mode)
     {
       switch (currentStep)
